@@ -37,7 +37,7 @@ function App() {
 
   return (
     <Container fluid className="p-4">
-      <h1 className="mb-4">Dashboard_sample_Testing_v2</h1>
+      <h1 className="mb-4">Dashboard_sample_Testing_main</h1>
 
       {/* Stats */}
       <Row className="mb-4">
