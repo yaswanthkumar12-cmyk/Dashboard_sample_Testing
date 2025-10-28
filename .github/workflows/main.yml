@@ -11,6 +11,15 @@ jobs:
   notify-teams:
     runs-on: ubuntu-latest
     steps:
+      - name: Prepare last 5 commit messages for push
+        if: github.event_name == 'push'
+        id: commits
+        run: |
+          commits=$(jq -r '.commits | reverse | .[:5] | .[] | "- [" + .message + "](" + .url + ")"' <<< "${{ toJson(github.event) }}")
+          echo "commits<<EOF" >> $GITHUB_OUTPUT
+          echo "$commits" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
       - name: Send Adaptive Card to Teams
         uses: fjogeleit/http-request-action@v1
         with:
@@ -30,8 +39,8 @@ jobs:
                   "activitySubtitle": "**Committer:** ${{ github.actor }}",
                   "facts": [
                     {
-                      "name": "Commit Message",
-                      "value": "${{ github.event.head_commit.message || 'N/A' }}"
+                      "name": "Commit Messages",
+                      "value": "${{ github.event_name == 'push' && steps.commits.outputs.commits || github.event.head_commit.message || 'N/A' }}"
                     },
                     {
                       "name": "PR Title",
@@ -52,7 +61,7 @@ jobs:
                   "targets": [
                     {
                       "os": "default",
-                      "uri": "${{ github.event.head_commit.url || github.event.pull_request.html_url || '' }}"
+                      "uri": "${{ github.event_name == 'push' && github.event.head_commit.url || github.event.pull_request.html_url || '' }}"
                     }
                   ]
                 }
