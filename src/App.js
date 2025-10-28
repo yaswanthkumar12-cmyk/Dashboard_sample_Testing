@@ -39,7 +39,7 @@ function App() {
     <Container fluid className="p-4">
 
       <h1 className="mb-4">Dashboard_sample_Testing_UPDATED_MANI_uuu</h1>
-      <h1>manii</h1>
+    
 
 
       {/* Stats */}
