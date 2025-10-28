@@ -1,15 +1,17 @@
-name: Notify Teams on Push
+name: Notify Teams on Push, PR, and Merge
 
 on:
   push:
     branches:
       - '**'
+  pull_request:
+    types: [opened, synchronize, closed]
 
 jobs:
   notify-teams:
     runs-on: ubuntu-latest
     steps:
-      - name: Send notification to Teams
+      - name: Send Adaptive Card to Teams
         uses: fjogeleit/http-request-action@v1
         with:
           url: 'https://middlewaretalentslimited.webhook.office.com/webhookb2/c04dd3b1-d304-465c-8de5-3b20c5e63080@118b2919-e434-405b-9f3c-3a829eba55f9/IncomingWebhook/b330747133af4f0d98b5b9e0b4fb1da9/225aaacb-3f40-48b2-a6c7-0f309a7f8c59/V27ZRot6_0dagnBFE6wCMxHdhE-3X1QYavY139KgIzVjE1'
@@ -17,5 +19,26 @@ jobs:
           contentType: 'application/json'
           data: |
             {
-              "text": "Branch: **${{ github.ref_name }}**\nCommitter: **${{ github.actor }}**\nMessage: ${{ github.event.head_commit.message }}\nURL: ${{ github.event.head_commit.url }}"
+              "@type": "MessageCard",
+              "@context": "https://schema.org/extensions",
+              "summary": "GitHub Commit Notification",
+              "themeColor": "00BFFF",
+              "title": " New GitHub Commit",
+              "sections": [
+                {
+                  "activityTitle": "**Branch:** mani",
+                  "activitySubtitle": "**Committer:** manikanta266",
+                  "facts": [
+                    {
+                      "name": "Commit Message",
+                      "value": "added new content"
+                    },
+                    {
+                      "name": "Commit URL",
+                      "value": "[View Commit](https://github.com/yaswanthkumar12-cmyk/Dashboard_sample_Testing/commit/bebc0a57a67dc9cff5e2624f9583d69a52caf554)"
+                    }
+                  ],
+                  "markdown": true
+                }
+              ]
             }
