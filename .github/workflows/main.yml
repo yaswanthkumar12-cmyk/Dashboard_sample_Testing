@@ -3,7 +3,7 @@ name: Notify Teams on Push
 on:
   push:
     branches:
-      - '**'  # Trigger on any branch
+      - '**'
 
 jobs:
   notify-teams:
@@ -14,10 +14,8 @@ jobs:
         with:
           url: 'https://middlewaretalentslimited.webhook.office.com/webhookb2/c04dd3b1-d304-465c-8de5-3b20c5e63080@118b2919-e434-405b-9f3c-3a829eba55f9/IncomingWebhook/b330747133af4f0d98b5b9e0b4fb1da9/225aaacb-3f40-48b2-a6c7-0f309a7f8c59/V27ZRot6_0dagnBFE6wCMxHdhE-3X1QYavY139KgIzVjE1'
           method: 'POST'
-          headers: |
-            Content-Type: application/json
-          body: |
+          contentType: 'application/json'
+          data: |
             {
-              "title": "GitHub Action Notification",
               "text": "Branch: **${{ github.ref_name }}**\nCommitter: **${{ github.actor }}**\nMessage: ${{ github.event.head_commit.message }}\nURL: ${{ github.event.head_commit.url }}"
             }
