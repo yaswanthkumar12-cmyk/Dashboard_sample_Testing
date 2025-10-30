@@ -1,47 +1,28 @@
-name: Auto Pipeline
+name: Run Flow on Commit Only
 
 on:
   push:
     branches:
-      - main        # Change this to your main branch
+      - main        # Change to your branch if needed
     paths:
-      - '**/*'      # Trigger on any file changes
-  pull_request:
-    branches:
-      - main        # Optional: run on PRs to main
+      - '**/*'      # Run if any file changes
 
 jobs:
-  pipeline:
+  flow:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Skip if this is a rerun
-      - name: Check if rerun
+      # Skip if this is a rerun triggered from the UI
+      - name: Skip reruns
         if: ${{ github.event.workflow_run != null }}
         run: |
-          echo "This is a rerun triggered from the UI. Exiting pipeline."
+          echo "This workflow is a rerun triggered from UI. Exiting."
           exit 0
 
-      # Your main pipeline steps
-      - name: Setup environment
+      - name: Run your flow
         run: |
-          echo "Setting up environment..."
-          # Add your setup commands here
-
-      - name: Run build
-        run: |
-          echo "Building project..."
-          # Add build commands here
-
-      - name: Run tests
-        run: |
-          echo "Running tests..."
-          # Add test commands here
-
-      - name: Deploy or other process
-        run: |
-          echo "Deploying or running final steps..."
-          # Add deploy/other commands here
+          echo "New commit detected. Running the flow..."
+          # Add your actual commands or scripts here
