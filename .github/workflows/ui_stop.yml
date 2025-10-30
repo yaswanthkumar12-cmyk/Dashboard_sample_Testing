@@ -1,0 +1,19 @@
+name: Manual Dispatch Only
+
+on:
+  workflow_dispatch:   # This makes it manual-only
+
+jobs:
+  run-flow:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Show message
+        run: echo "Workflow triggered manually via the GitHub UI."
+
+      - name: Run your process
+        run: |
+          echo "Running the actual flow here..."
+          # Put your commands or scripts here
