@@ -1,19 +1,47 @@
-name: Manual Dispatch Only
+name: Auto Pipeline
 
 on:
-  workflow_dispatch:   # This makes it manual-only
+  push:
+    branches:
+      - main        # Change this to your main branch
+    paths:
+      - '**/*'      # Trigger on any file changes
+  pull_request:
+    branches:
+      - main        # Optional: run on PRs to main
 
 jobs:
-  run-flow:
+  pipeline:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Show message
-        run: echo "Workflow triggered manually via the GitHub UI."
-
-      - name: Run your process
+      # Skip if this is a rerun
+      - name: Check if rerun
+        if: ${{ github.event.workflow_run != null }}
         run: |
-          echo "Running the actual flow here..."
-          # Put your commands or scripts here
+          echo "This is a rerun triggered from the UI. Exiting pipeline."
+          exit 0
+
+      # Your main pipeline steps
+      - name: Setup environment
+        run: |
+          echo "Setting up environment..."
+          # Add your setup commands here
+
+      - name: Run build
+        run: |
+          echo "Building project..."
+          # Add build commands here
+
+      - name: Run tests
+        run: |
+          echo "Running tests..."
+          # Add test commands here
+
+      - name: Deploy or other process
+        run: |
+          echo "Deploying or running final steps..."
+          # Add deploy/other commands here
