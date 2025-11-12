@@ -1,0 +1,40 @@
+name: Mail Notification Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Checkout your repo
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 2: Write the SITE secret to a file
+      - name: Write SITE secret to file
+        run: |
+          echo "${{ secrets.SITE }}" > one.txt
+          echo "Created file one.txt with SITE secret."
+
+      # Step 3: Add a tag/version to the file
+      - name: Add version tag
+        run: |
+          echo "v1.0" >> one.txt
+          echo "Added version tag to one.txt"
+
+      # Step 4: Display contents (optional for debugging)
+      - name: Display one.txt contents
+        run: cat one.txt
+
+      # Step 5: Upload one.txt to remote VM via SSH
+      - name: Upload one.txt to VM
+        env:
+          SSH_KEY: ${{ secrets.VM_PRIVATE_KEY }}
+        run: |
+          echo "$SSH_KEY" > vm_key.pem
+          chmod 600 vm_key.pem
+          scp -o StrictHostKeyChecking=no -i vm_key.pem one.txt harness@20.120.225.84:~/one.txt
+          rm vm_key.pem
