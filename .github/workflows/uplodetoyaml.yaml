@@ -3,7 +3,7 @@ name: Mail Notification Workflow
 on:
   push:
     branches:
-      - main
+      *
 
 jobs:
   notify:
