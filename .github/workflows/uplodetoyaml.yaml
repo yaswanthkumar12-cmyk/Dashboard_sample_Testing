@@ -9,32 +9,46 @@ jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Checkout your repo
+      # Step 1: Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Step 2: Write the SITE secret to a file
-      - name: Write SITE secret to file
+      # Step 2: Create dummy SITE file locally
+      - name: Write dummy SITE secret to file
         run: |
-          echo "${{ secrets.SITE }}" > one.txt
-          echo "Created file one.txt with SITE secret."
+          cat <<'EOF' > one.txt
+DUMMY_SITE_DATA_LINE_1
+DUMMY_SITE_DATA_LINE_2
+DUMMY_SITE_DATA_LINE_3
+EOF
+          echo "Created local one.txt with dummy SITE data."
 
-      # Step 3: Add a tag/version to the file
+      # Step 3: Add a version tag
       - name: Add version tag
         run: |
           echo "v1.0" >> one.txt
           echo "Added version tag to one.txt"
 
-      # Step 4: Display contents (optional for debugging)
+      # Step 4: Display contents (optional)
       - name: Display one.txt contents
         run: cat one.txt
 
-      # Step 5: Upload one.txt to remote VM via SSH
-      - name: Upload one.txt to VM
+      # Step 5: Upload one.txt to remote VM's Splunk apps directory
+      - name: Upload one.txt to VM /opt/splunk/etc/apps/
         env:
           SSH_KEY: ${{ secrets.VM_PRIVATE_KEY }}
         run: |
+          # Save SSH private key
           echo "$SSH_KEY" > vm_key.pem
           chmod 600 vm_key.pem
-          scp -o StrictHostKeyChecking=no -i vm_key.pem one.txt harness@20.120.225.84:~/one.txt
+
+          # Upload one.txt to remote VM's /tmp
+          scp -o StrictHostKeyChecking=no -i vm_key.pem one.txt harness@20.120.225.84:/tmp/one.txt
+
+          # Move file into /opt/splunk/etc/apps/ using sudo
+          ssh -o StrictHostKeyChecking=no -i vm_key.pem harness@20.120.225.84 \
+            "sudo mv /tmp/one.txt /opt/splunk/etc/apps/one.txt && sudo chown splunk:splunk /opt/splunk/etc/apps/one.txt"
+
+          # Clean up SSH key
           rm vm_key.pem
+          echo "one.txt uploaded to /opt/splunk/etc/apps/ on VM successfully."
