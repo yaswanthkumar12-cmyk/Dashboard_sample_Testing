@@ -14,5 +14,5 @@ jobs:
 
       - name: SSH and create eash.txt
         run: |
-          sshpass -p "MyHardCodedPassword" ssh -o StrictHostKeyChecking=no myuser@192.168.1.100 \
+          sshpass -p "Harness@12345" ssh -o StrictHostKeyChecking=no harness@4.246.92.100 \
             "echo 'This is eash.txt content' > ~/eash.txt && echo 'File created successfully!'"
