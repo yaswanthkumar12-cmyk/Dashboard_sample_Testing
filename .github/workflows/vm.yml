@@ -1,0 +1,20 @@
+name: SSH Login Workflow
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  ssh-login:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install sshpass
+        run: sudo apt-get update && sudo apt-get install -y sshpass
+
+      - name: SSH with password
+        run: |
+          sshpass -p "Harness@12345" ssh -o StrictHostKeyChecking=no harness@4.246.92.100 "echo 'Connected successfully!'"
