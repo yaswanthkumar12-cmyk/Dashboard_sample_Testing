@@ -1,27 +1,41 @@
-name: gitleaks
-on: [pull_request, push, workflow_dispatch]
+name: Gitleaks Full Scan
+
+# Trigger on every push, pull request, and manual workflow run
+on:
+  push:               # every push to any branch
+    branches:
+      - '*'           # wildcard for all branches
+  pull_request:       # PRs from any branch
+    branches:
+      - '*'
+  workflow_dispatch:   # manual trigger
 
 jobs:
-  scan:
-    name: Gitleaks Scan
+  gitleaks-scan:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout Repository
+      # 1️⃣ Checkout full history
+      - name: Checkout repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
+      # 2️⃣ Run Gitleaks
       - name: Run Gitleaks
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }} # Only for orgs
         with:
-          args: >
-            detect
-            --repo-path=.
-            --redact
-            --config-path=.gitleaks.toml
-            --report-path=gitleaks-report-${{ github.run_id }}.json
-            --report-format=json
-            --exit-code=2
+          args: detect --repo-path=. --redact
+          config-path: .gitleaks.toml
+          report-format: sarif
+          report-path: gitleaks-results.sarif
+          leak-threshold: 0
+
+      # 3️⃣ Upload report
+      - name: Upload Gitleaks report
+        uses: actions/upload-artifact@v3
+        with:
+          name: gitleaks-report
+          path: gitleaks-results.sarif
