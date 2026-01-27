@@ -1,7 +1,9 @@
 title = "Gitleaks Full Scan"
-description = "Scan all files for anything that looks like secrets"
+description = "Scan all files for secrets"
 
+# Example rule to detect anything containing 'SECRET' for testing
 [[rules]]
-description = "Catch everything for testing"
-regex = '.*'       # matches any content
+id = "test-secret"        # Unique ID is mandatory
+description = "Detect test secrets"
+regex = "(?i)SECRET"     # Case-insensitive match
 tags = ["test"]

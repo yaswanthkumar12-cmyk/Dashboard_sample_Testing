@@ -1,5 +1,6 @@
 name: gitleaks
 on: [pull_request, push, workflow_dispatch]
+
 jobs:
   scan:
     name: gitleaks
@@ -11,4 +12,14 @@ jobs:
       - uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE}} # Only required for Organizations, not personal accounts.
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE}} # Only for orgs
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: detect --repo-path=. --redact
+          config-path: .gitleaks.toml
+          report-path: gitleaks-report.json 
+          report-format: json
+          leak-threshold: 0
+          
